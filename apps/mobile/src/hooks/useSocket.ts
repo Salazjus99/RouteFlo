@@ -1,19 +1,19 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { io, Socket } from 'socket.io-client'
 import { API_URL } from '../lib/api'
 
 export function useSocket(routeId: string) {
-  const socketRef = useRef<Socket | null>(null)
+  const [socket, setSocket] = useState<Socket | null>(null)
 
   useEffect(() => {
-    const socket = io(API_URL)
-    socketRef.current = socket
-    socket.emit('join:route', routeId)
+    const s = io(API_URL)
+    s.emit('join:route', routeId)
+    setSocket(s)
 
     return () => {
-      socket.disconnect()
+      s.disconnect()
     }
   }, [routeId])
 
-  return { socket: socketRef.current }
+  return { socket }
 }

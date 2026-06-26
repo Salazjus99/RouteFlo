@@ -20,13 +20,19 @@ export function StopDetail({ route, navigation }: Props) {
   const [stop, setStop] = useState<Stop | null>(null)
 
   useEffect(() => {
-    api.get<Stop>(`/stops/${stopId}`).then(setStop)
+    api.get<Stop>(`/stops/${stopId}`)
+      .then(setStop)
+      .catch(() => Alert.alert('Error', 'Failed to load stop details.'))
   }, [stopId])
 
   async function handleComplete() {
-    await api.patch(`/stops/${stopId}/complete`, { routeId })
-    setStop((s) => s ? { ...s, status: 'complete' } : s)
-    navigation.goBack()
+    try {
+      await api.patch(`/stops/${stopId}/complete`, { routeId })
+      setStop((s) => s ? { ...s, status: 'complete' } : s)
+      navigation.goBack()
+    } catch {
+      Alert.alert('Error', 'Failed to complete stop. Please try again.')
+    }
   }
 
   async function handlePhoto() {
