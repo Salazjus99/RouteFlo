@@ -32,12 +32,12 @@ export function useGeofencing(stops: Stop[], onArrival: (stopId: string) => void
 
       // NOTE: Stop coordinates would come from geocoded addresses stored in the DB.
       // For now this hook is wired up structurally; coordinate lookup is a TODO.
-      Location.watchPositionAsync(
+      const subscription = await Location.watchPositionAsync(
         { accuracy: Location.Accuracy.High, distanceInterval: 10 },
         (loc) => {
           if (!active) return
           const { latitude, longitude } = loc.coords
-          stops.forEach((stop: any) => {
+          stops.forEach((stop) => {
             if (triggeredRef.current.has(stop.id)) return
             if (stop.status !== 'pending') return
             if (!stop.latitude || !stop.longitude) return
@@ -49,9 +49,13 @@ export function useGeofencing(stops: Stop[], onArrival: (stopId: string) => void
           })
         }
       )
+      return subscription
     }
 
-    watch()
-    return () => { active = false }
+    const subscriptionPromise = watch()
+    return () => {
+      active = false
+      subscriptionPromise.then((sub) => sub?.remove())
+    }
   }, [stops])
 }

@@ -23,6 +23,8 @@ export interface Stop {
   flaggedByOffice: boolean
   notes: string | null
   completedAt: string | null
+  latitude: number | null
+  longitude: number | null
 }
 
 export interface Route {

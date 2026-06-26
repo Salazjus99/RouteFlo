@@ -41,19 +41,26 @@ export function PreTripInspection({ route, navigation }: Props) {
   const failedItems = CHECKLIST_ITEMS.filter((item) => !checks[item])
 
   async function handleSubmit() {
-    if (failedItems.length > 0) {
-      // Auto-generate repair ticket for any unchecked items
-      await api.post('/tickets', {
-        source: 'pre_trip',
-        notes: `Pre-trip issues: ${failedItems.join(', ')}. Driver notes: ${notes}`,
-      })
-      Alert.alert(
-        'Repair Ticket Created',
-        `A ticket has been sent to the mechanic for: ${failedItems.join(', ')}`,
-        [{ text: 'OK', onPress: () => navigation.navigate('Dashboard', { routeId }) }]
-      )
-    } else {
-      navigation.navigate('Dashboard', { routeId })
+    if (submitting) return
+    setSubmitting(true)
+    try {
+      if (failedItems.length > 0) {
+        await api.post('/tickets', {
+          source: 'pre_trip',
+          notes: `Pre-trip issues: ${failedItems.join(', ')}. Driver notes: ${notes}`,
+        })
+        Alert.alert(
+          'Repair Ticket Created',
+          `A ticket has been sent to the mechanic for: ${failedItems.join(', ')}`,
+          [{ text: 'OK', onPress: () => navigation.navigate('Dashboard', { routeId }) }]
+        )
+      } else {
+        navigation.navigate('Dashboard', { routeId })
+      }
+    } catch {
+      Alert.alert('Error', 'Failed to submit inspection. Please try again.')
+    } finally {
+      setSubmitting(false)
     }
   }
 

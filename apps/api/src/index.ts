@@ -8,9 +8,11 @@ import { ticketsRouter } from './routes/tickets'
 
 const app = express()
 const httpServer = createServer(app)
-export const io = new Server(httpServer, { cors: { origin: '*' } })
+const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS?.split(',') ?? ['http://localhost:8081']
 
-app.use(cors())
+export const io = new Server(httpServer, { cors: { origin: ALLOWED_ORIGINS } })
+
+app.use(cors({ origin: ALLOWED_ORIGINS }))
 app.use(express.json())
 
 app.use('/api/routes', routeRouter)

@@ -28,7 +28,9 @@ export function DriverDashboard({ route, navigation }: Props) {
   useGeofencing(routeData?.stops ?? [], onStopArrival)
 
   useEffect(() => {
-    api.get<Route>(`/routes/${routeId}`).then(setRouteData)
+    api.get<Route>(`/routes/${routeId}`)
+      .then(setRouteData)
+      .catch(() => Alert.alert('Error', 'Failed to load route. Please restart the app.'))
   }, [routeId])
 
   // Real-time updates from office

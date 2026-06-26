@@ -3,6 +3,13 @@ import type { Route } from '@routeflo/shared'
 
 export const routeRouter = Router()
 
+// GET /api/routes/active?driverId=x — fetch today's active route for a driver
+routeRouter.get('/active', (req, res) => {
+  const { driverId } = req.query
+  // TODO: query database for today's route assigned to driverId
+  res.json({ id: 'placeholder-route-id', driverId })
+})
+
 // GET /api/routes/:id — fetch a route with all stops
 routeRouter.get('/:id', (req, res) => {
   // TODO: query database
